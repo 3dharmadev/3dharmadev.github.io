@@ -219,16 +219,18 @@ body{
   }
   
   .serviceimg>div:hover img{
-    opacity: 0.5;
+   
+    transform: scale(1.2); 
   }
   
   .serviceimg>div:hover .middle {
-    opacity: 1;
+     
+    transform: scale(1.2); 
   }
   
   .text {
     background-color: rgb(9, 11, 14);
-    color: white;
+    color: rgb(159, 221, 255);
     font-size: 16px;
     padding: 16px 32px;
     border-radius: 10px;
@@ -287,12 +289,12 @@ body{
     font-weight: bold;
     text-align: center;
     color: black;
-    background-color: skyblue;
+    background-color: rgb(244, 248, 250);
     border-radius: 10px;
   }
   .contact_me ul>a:hover{
     color: rgb(6, 6, 133);
-    background-color: aqua;
+    background-color: rgb(0, 208, 255);
     border: 2px solid rgb(6, 6, 133);
   }
   .contact_me img{
