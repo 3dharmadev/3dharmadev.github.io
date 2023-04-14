@@ -108,7 +108,7 @@ body{
 }
 .photo img{
     width: 270px;
-    height: 300px;
+    height: 350px;
     border-radius: 50px;
     display: block;
     margin: auto;
@@ -178,7 +178,7 @@ body{
     background-color: white;
 }
 #websites>div:hover{
-    background-color: aqua;
+    background-color: rgb(0, 38, 255);
 }
 
 .serviceimg>div{
