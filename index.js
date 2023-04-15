@@ -26,5 +26,5 @@ scrollServices.addEventListener("wheel", (evt) => {
 });
 
 function openResume(){
-    window.open("https://drive.google.com/file/d/1AJujwVACr47OCJBrcXKx7RNLYSLPUBBI/view?usp=sharing", "_blank")
+    window.open("https://drive.google.com/file/d/10LRw0dgPoXjWrHMN6A7oSmEVph2mFpfS/view?usp=sharing", "_blank")
 }
