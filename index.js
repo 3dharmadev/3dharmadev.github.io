@@ -26,6 +26,6 @@ scrollServices.addEventListener("wheel", (evt) => {
 });
 
 function openResume(){
-    window.open("https://drive.google.com/file/d/1NcrySaNQMPgcGizUDAWvWtAXPxiXdug7/view?usp=sharing", "_blank")
+    window.open("https://drive.google.com/file/d/1Q6W8NsgLN2UYPYwchVvufyLHAp7a6bEW/view?usp=sharing", "_blank")
 }
  
