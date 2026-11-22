@@ -1,848 +1,182 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SatapathyOS 95</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SatapathyOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Tahoma:wght@400;700&display=swap');
+:root{
+  --glass:rgba(255,255,255,.78); --glass-strong:rgba(255,255,255,.92); --ink:#14213d; --muted:#56627e; --line:rgba(20,33,61,.12);
+  --accent:#3b6cf6; --chip:rgba(20,33,61,.06);
+  --bar:rgba(12,18,38,.45); --dock:rgba(255,255,255,.22);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--glass:rgba(22,30,56,.78);--glass-strong:rgba(22,30,56,.94);--ink:#e8ecf6;--muted:#9aa6c2;--line:rgba(255,255,255,.12);--accent:#86a3ff;--chip:rgba(255,255,255,.08);--dock:rgba(10,15,32,.45)}
+}
+:root[data-theme="dark"]{--glass:rgba(22,30,56,.78);--glass-strong:rgba(22,30,56,.94);--ink:#e8ecf6;--muted:#9aa6c2;--line:rgba(255,255,255,.12);--accent:#86a3ff;--chip:rgba(255,255,255,.08);--dock:rgba(10,15,32,.45)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font:400 14.5px/1.6 "IBM Plex Sans",system-ui,sans-serif;color:#fff;-webkit-font-smoothing:antialiased;
+  background:radial-gradient(60% 55% at 15% 20%,#3a4fd8 0,transparent 70%),radial-gradient(50% 50% at 85% 25%,#0fb5ae 0,transparent 70%),radial-gradient(70% 60% at 60% 95%,#7a3fd1 0,transparent 70%),#0d1530;}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:8px}
 
-*{ box-sizing:border-box; margin:0; padding:0; }
-html,body{ height:100%; }
-body{
-font-family:‘Tahoma’,‘Segoe UI’,Verdana,sans-serif;
-font-size:12.5px;
-background:#008080;
-overflow:hidden;
-height:100vh;
-color:#000;
--webkit-font-smoothing:none;
-}
-::selection{ background:#000080; color:#fff; }
+/* top bar */
+#top{position:fixed;inset:0 0 auto;height:calc(34px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 14px 0;display:flex;align-items:center;justify-content:space-between;background:var(--bar);backdrop-filter:blur(18px);z-index:9000;font-size:13px}
+#top .l{display:flex;align-items:center;gap:14px}
+#launch{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:15px;padding:2px 8px;border-radius:6px}
+#launch:hover{background:rgba(255,255,255,.15)}
+#top .r{display:flex;align-items:center;gap:12px}
+#theme{width:26px;height:26px;border-radius:50%;display:grid;place-items:center}
+#theme:hover{background:rgba(255,255,255,.15)}
 
-/* ––––– bevel utility ––––– */
-.bevel-out{
-border-radius:0;
-box-shadow:
-inset -1px -1px 0 #0a0a0a,
-inset 1px 1px 0 #ffffff,
-inset -2px -2px 0 #808080,
-inset 2px 2px 0 #dfdfdf;
-background:#c0c0c0;
-}
-.bevel-in{
-box-shadow:
-inset -1px -1px 0 #ffffff,
-inset 1px 1px 0 #0a0a0a,
-inset -2px -2px 0 #dfdfdf,
-inset 2px 2px 0 #808080;
-background:#c0c0c0;
-}
+/* desktop icons */
+#desk{position:absolute;top:calc(48px + env(safe-area-inset-top,0px));left:14px;bottom:110px;display:flex;flex-direction:column;flex-wrap:wrap;gap:8px;align-content:flex-start}
+.dicon{width:84px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px;border-radius:12px;text-align:center;font-size:12.5px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.dicon:hover{background:rgba(255,255,255,.14)}
+.tile{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;box-shadow:0 6px 14px -4px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.35)}
+.tile svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 
-/* ––––– desktop ––––– */
-#desktop{
-position:relative;
-width:100%;
-height:calc(100vh - 34px);
-padding:14px;
-display:flex;
-flex-direction:column;
-flex-wrap:wrap;
-align-content:flex-start;
-gap:4px;
-}
-.icon{
-width:78px;
-height:80px;
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:4px;
-cursor:default;
-padding:4px 2px;
-border:1px dotted transparent;
-}
-.icon:focus-visible, .icon.selected{
-border:1px dotted #fff;
-background:rgba(0,0,128,0.35);
-}
-.icon svg{ width:34px; height:34px; }
-.icon span{
-color:#fff;
-text-shadow:1px 1px 1px #000;
-text-align:center;
-line-height:1.15;
-font-size:11.5px;
-max-width:76px;
-}
-.icon.selected span{ background:#000080; }
+/* windows */
+.win{position:absolute;display:none;flex-direction:column;background:var(--glass);color:var(--ink);backdrop-filter:blur(26px) saturate(1.4);border:1px solid var(--line);border-radius:14px;box-shadow:0 30px 60px -20px rgba(0,0,0,.55);max-width:calc(100vw - 16px);max-height:calc(100dvh - 150px);overflow:hidden}
+.win.open{display:flex}
+.win.max{left:8px!important;top:calc(42px + env(safe-area-inset-top,0px))!important;width:calc(100vw - 16px)!important;height:calc(100dvh - 130px - env(safe-area-inset-top,0px))!important;max-height:none}
+.bar{display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;cursor:grab;user-select:none;touch-action:none;border-bottom:1px solid var(--line)}
+.bar:active{cursor:grabbing}
+.lights{display:flex;gap:7px}
+.lights button{width:13px;height:13px;border-radius:50%;padding:0}
+.lights .c{background:#ff5f57}.lights .m{background:#febc2e}.lights .x{background:#28c840}
+.bar b{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:600;flex:1;text-align:center;padding-right:46px}
+.body{padding:22px 24px 26px;overflow:auto;flex:1}
+.body h2{font-family:"Bricolage Grotesque",sans-serif;font-size:24px;line-height:1.15;letter-spacing:-.02em;margin-bottom:12px}
+.body p{color:var(--muted);margin-bottom:12px;max-width:62ch}
+.body h3{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;margin:16px 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;list-style:none}
+.chips li{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:13px}
+.tl{list-style:none;border-left:2px solid var(--line);margin-left:6px}
+.tl li{position:relative;padding:0 0 20px 22px}
+.tl li::before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.tl b{display:block;font-weight:500;font-size:15.5px}.tl span{color:var(--muted);font-size:13.5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.proj{background:var(--chip);border:1px solid var(--line);border-radius:12px;padding:14px}
+.proj b{display:block;font-weight:500}.proj span{color:var(--muted);font-size:13px}
+.proj.d{border-left:3px solid #e9a23b}.proj.a{border-left:3px solid var(--accent)}
+.links a{display:block;padding:13px 15px;margin-bottom:10px;background:var(--chip);border:1px solid var(--line);border-radius:12px;color:inherit;text-decoration:none;overflow-wrap:anywhere}
+.links a:hover{border-color:var(--accent)}
+.links small{display:block;color:var(--muted);font-size:12.5px}
 
-/* ––––– windows ––––– */
-.win{
-position:absolute;
-min-width:260px;
-display:none;
-flex-direction:column;
-}
-.win.open{ display:flex; }
-.win-title{
-height:20px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:2px 3px 2px 6px;
-background:linear-gradient(90deg,#000080,#1084d0);
-color:#fff;
-font-weight:700;
-font-size:12px;
-cursor:move;
-user-select:none;
-}
-.win-title .win-title-txt{ display:flex; align-items:center; gap:6px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-.win-btns{ display:flex; gap:2px; }
-.win-btns button{
-width:16px; height:14px; font-size:10px; line-height:1;
-background:#c0c0c0; border:none; cursor:pointer; font-weight:700;
-box-shadow:
-inset -1px -1px 0 #0a0a0a,
-inset 1px 1px 0 #ffffff;
-padding:0;
-}
-.win-btns button:active{
-box-shadow:
-inset 1px 1px 0 #0a0a0a,
-inset -1px -1px 0 #ffffff;
-}
-.win-body{
-padding:12px;
-background:#c0c0c0;
-overflow:auto;
-flex:1;
-}
-.win-menubar{
-display:flex; gap:14px; padding:2px 8px; background:#c0c0c0; font-size:12px;
-border-bottom:1px solid #808080;
-}
-.win-statusbar{
-padding:2px 8px; font-size:11px; color:#000; background:#c0c0c0;
-}
+/* dock */
+#dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;padding:9px 12px;background:var(--dock);backdrop-filter:blur(22px);border:1px solid rgba(255,255,255,.22);border-radius:24px;z-index:9000}
+#dock button{position:relative;padding:0;transition:transform .15s}
+#dock button:hover{transform:translateY(-5px) scale(1.08)}
+#dock button.on::after{content:"";position:absolute;left:50%;bottom:-6px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:#fff}
 
-/* ––––– content styling ––––– */
-h3.section-h{ font-size:13px; margin-bottom:8px; }
-.win-body p{ margin-bottom:10px; line-height:1.5; }
-.win-body p:last-child{ margin-bottom:0; }
-hr.sep{ border:none; border-top:1px solid #808080; border-bottom:1px solid #fff; margin:10px 0; }
+/* launcher */
+#menu{position:fixed;left:10px;top:calc(40px + env(safe-area-inset-top,0px));width:250px;display:none;padding:8px;background:var(--glass-strong);color:var(--ink);backdrop-filter:blur(26px);border:1px solid var(--line);border-radius:14px;z-index:9500;box-shadow:0 24px 50px -16px rgba(0,0,0,.6)}
+#menu.open{display:block}
+#menu button{display:flex;align-items:center;gap:12px;width:100%;padding:8px 10px;border-radius:9px;text-align:left}
+#menu button:hover{background:var(--chip)}
+#menu .tile{width:30px;height:30px;border-radius:9px;box-shadow:none}#menu .tile svg{width:17px;height:17px}
+#menu hr{border:0;border-top:1px solid var(--line);margin:6px 4px}
 
-/* tree view (skills) */
-.tree{ font-size:12.5px; }
-.tree-node{ margin-left:0; }
-.tree-toggle{
-display:inline-flex; align-items:center; gap:6px; cursor:pointer; padding:2px 0;
-}
-.tree-toggle .box{
-width:11px; height:11px; border:1px solid #000; background:#fff;
-display:flex; align-items:center; justify-content:center; font-size:10px; line-height:1;
-flex:none;
-}
-.tree-children{ margin-left:24px; display:none; }
-.tree-node.open > .tree-children{ display:block; }
-.tree-node.open > .tree-toggle .box::before{ content:’-’; }
-.tree-node:not(.open) > .tree-toggle .box::before{ content:’+’; }
-.leaf{ margin-left:24px; padding:2px 0; display:flex; align-items:center; gap:6px; }
-.leaf::before{ content:‘📄’; font-size:11px; }
-
-/* event viewer (education) */
-table.evt{ width:100%; border-collapse:collapse; font-size:12px; background:#fff; }
-table.evt th{ background:#c0c0c0; text-align:left; padding:4px 6px; border:1px solid #808080; }
-table.evt td{ padding:5px 6px; border-bottom:1px solid #d8d8d8; vertical-align:top; }
-table.evt tr:nth-child(even) td{ background:#f0f0f0; }
-
-/* explorer (projects folder) */
-.explorer-icons{
-display:flex; flex-wrap:wrap; gap:14px; padding:6px;
-}
-.exp-icon{
-width:88px; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer;
-padding:6px 4px; border:1px dotted transparent;
-}
-.exp-icon:hover{ background:#000080; border-color:#000080; }
-.exp-icon:hover span{ color:#fff; }
-.exp-icon svg{ width:36px; height:36px; }
-.exp-icon span{ font-size:11px; text-align:center; }
-
-/* project detail window */
-.proj-detail dt{ font-weight:700; margin-top:8px; }
-.proj-detail dd{ margin-left:0; }
-.chips{ display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
-.chip{ background:#fff; border:1px solid #808080; box-shadow: inset 1px 1px 0 #fff; padding:2px 7px; font-size:11px; }
-.win95-btn{
-background:#c0c0c0; border:none; padding:5px 14px; font-size:12px; cursor:pointer;
-box-shadow:
-inset -1px -1px 0 #0a0a0a,
-inset 1px 1px 0 #ffffff,
-inset -2px -2px 0 #808080,
-inset 2px 2px 0 #dfdfdf;
-}
-.win95-btn:active{
-box-shadow:
-inset 1px 1px 0 #0a0a0a,
-inset -1px -1px 0 #ffffff,
-inset 2px 2px 0 #808080,
-inset -2px -2px 0 #dfdfdf;
-}
-.win95-btn:disabled{ color:#808080; text-shadow:1px 1px 0 #fff; cursor:default; }
-
-/* contact form */
-.field-row{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
-.field-row label{ width:64px; text-align:right; font-size:12px; flex:none; }
-.field-row input, .field-row textarea{
-flex:1; font-family:inherit; font-size:12px; padding:3px 5px;
-box-shadow:
-inset -1px -1px 0 #ffffff,
-inset 1px 1px 0 #0a0a0a,
-inset -2px -2px 0 #dfdfdf,
-inset 2px 2px 0 #808080;
-border:none; background:#fff;
-}
-.field-row.textarea{ align-items:flex-start; }
-.field-row textarea{ resize:vertical; }
-
-/* taskbar */
-#taskbar{
-position:fixed; left:0; bottom:0; width:100%; height:34px;
-background:#c0c0c0;
-display:flex; align-items:center; gap:6px; padding:3px 4px;
-box-shadow: inset 0 1px 0 #fff;
-z-index:5000;
-}
-#startBtn{
-display:flex; align-items:center; gap:6px; padding:3px 10px 3px 6px;
-font-weight:700; font-size:12.5px; height:100%;
-}
-#startBtn img, #startBtn .flag{ width:16px; height:16px; }
-#taskWins{ display:flex; gap:4px; flex:1; overflow:hidden; height:100%; }
-.task-btn{
-height:100%; min-width:130px; max-width:170px; text-align:left;
-font-size:12px; padding:2px 8px; display:flex; align-items:center; gap:6px;
-overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
-}
-.task-btn.active{
-box-shadow:
-inset 1px 1px 0 #0a0a0a,
-inset -1px -1px 0 #ffffff,
-inset 2px 2px 0 #808080,
-inset -2px -2px 0 #dfdfdf;
-}
-#clock{
-height:100%; display:flex; align-items:center; padding:0 10px; font-size:12px;
-box-shadow:
-inset -1px -1px 0 #ffffff,
-inset 1px 1px 0 #0a0a0a,
-inset -2px -2px 0 #dfdfdf,
-inset 2px 2px 0 #808080;
-}
-
-/* start menu */
-#startMenu{
-position:fixed; left:2px; bottom:36px; width:230px; display:none; flex-direction:row;
-z-index:6000;
-}
-#startMenu.open{ display:flex; }
-.sm-rail{
-width:26px; background:linear-gradient(180deg,#000080,#1084d0);
-display:flex; align-items:flex-end; justify-content:center; padding-bottom:10px;
-}
-.sm-rail span{
-writing-mode:vertical-rl; transform:rotate(180deg); color:#fff; font-weight:700; font-size:15px;
-letter-spacing:1px;
-}
-.sm-items{ flex:1; padding:3px; }
-.sm-item{
-display:flex; align-items:center; gap:10px; padding:6px 10px; font-size:12.5px; cursor:pointer;
-}
-.sm-item:hover{ background:#000080; color:#fff; }
-.sm-item svg{ width:22px; height:22px; flex:none; }
-.sm-sep{ border-top:1px solid #808080; border-bottom:1px solid #fff; margin:3px 6px; }
-
-/* shutdown screen */
-#shutdown{
-position:fixed; inset:0; background:#000080; color:#fff; z-index:9999;
-display:none; align-items:center; justify-content:center; text-align:center; padding:20px;
-}
-#shutdown.show{ display:flex; }
-#shutdown .box{ max-width:420px; }
-#shutdown h1{ font-size:20px; margin-bottom:14px; }
-#shutdown p{ font-size:13px; margin-bottom:18px; line-height:1.6; }
-
-@media (max-width:640px){
-.icon{ width:70px; }
-.win{ min-width:220px; max-width:92vw; }
-#startMenu{ width:200px; }
-.task-btn{ min-width:80px; }
-}
+@media (max-width:640px){#desk{display:none}.win{max-width:calc(100vw - 12px)}.bar b{padding-right:46px}}
+@media (prefers-reduced-motion:reduce){#dock button{transition:none}}
 </style>
-
 </head>
 <body>
-
-<div id="desktop">
-  <div class="icon" data-win="about" tabindex="0">
-    <svg viewBox="0 0 48 48"><rect x="9" y="4" width="30" height="40" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="9" y="4" width="30" height="8" fill="#c0c0c0" stroke="#000" stroke-width="1.5"/><line x1="13" y1="18" x2="35" y2="18" stroke="#808080" stroke-width="1.5"/><line x1="13" y1="24" x2="35" y2="24" stroke="#808080" stroke-width="1.5"/><line x1="13" y1="30" x2="30" y2="30" stroke="#808080" stroke-width="1.5"/></svg>
-    <span>About Me.txt</span>
-  </div>
-  <div class="icon" data-win="skills" tabindex="0">
-    <svg viewBox="0 0 48 48"><rect x="5" y="9" width="38" height="26" rx="1" fill="#c0c0c0" stroke="#000" stroke-width="1.5"/><rect x="9" y="13" width="30" height="16" fill="#000080"/><rect x="16" y="37" width="16" height="4" fill="#808080" stroke="#000"/><rect x="10" y="41" width="28" height="3" fill="#c0c0c0" stroke="#000"/></svg>
-    <span>System Properties</span>
-  </div>
-  <div class="icon" data-win="education" tabindex="0">
-    <svg viewBox="0 0 48 48"><rect x="6" y="8" width="36" height="32" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="6" y="8" width="36" height="7" fill="#000080"/><circle cx="14" cy="22" r="2.4" fill="#2a8"/><circle cx="14" cy="29" r="2.4" fill="#e2b400"/><circle cx="14" cy="36" r="2.4" fill="#c33"/><line x1="20" y1="22" x2="37" y2="22" stroke="#808080"/><line x1="20" y1="29" x2="37" y2="29" stroke="#808080"/><line x1="20" y1="36" x2="34" y2="36" stroke="#808080"/></svg>
-    <span>Event Viewer</span>
-  </div>
-  <div class="icon" data-win="projects" tabindex="0">
-    <svg viewBox="0 0 48 48"><path d="M4 14 L18 14 L22 18 L44 18 L44 38 L4 38 Z" fill="#ffd24c" stroke="#000" stroke-width="1.5"/><path d="M4 14 L44 14 L44 18 L4 18 Z" fill="#fff0bd" stroke="#000" stroke-width="1.5"/></svg>
-    <span>My Projects</span>
-  </div>
-  <div class="icon" data-win="contact" tabindex="0">
-    <svg viewBox="0 0 48 48"><rect x="5" y="11" width="38" height="26" fill="#fff" stroke="#000" stroke-width="1.5"/><path d="M5 11 L24 27 L43 11" fill="none" stroke="#000" stroke-width="1.5"/></svg>
-    <span>Contact.eml</span>
-  </div>
-  <div class="icon" data-win="resume" tabindex="0">
-    <svg viewBox="0 0 48 48"><rect x="8" y="4" width="26" height="40" fill="#fff" stroke="#000" stroke-width="1.5"/><path d="M27 4 L34 11 L27 11 Z" fill="#c0c0c0" stroke="#000" stroke-width="1"/><rect x="12" y="18" width="18" height="3" fill="#c33"/><line x1="12" y1="26" x2="30" y2="26" stroke="#808080"/><line x1="12" y1="31" x2="30" y2="31" stroke="#808080"/><line x1="12" y1="36" x2="24" y2="36" stroke="#808080"/></svg>
-    <span>Resume.exe</span>
-  </div>
+<div id="top">
+  <div class="l"><button id="launch" aria-haspopup="true" aria-expanded="false">SatapathyOS</button></div>
+  <div class="r"><button id="theme" aria-label="Toggle light and dark">◐</button><span id="clock"></span></div>
 </div>
-
-<!-- ===== ABOUT WINDOW ===== -->
-
-<div class="win bevel-out" id="win-about" style="left:70px; top:40px; width:400px;">
-  <div class="win-title"><span class="win-title-txt">📄 About Me.txt - Notepad</span>
-    <div class="win-btns"><button data-act="min">_</button><button data-act="max">▢</button><button data-act="close">✕</button></div>
-  </div>
-  <div class="win-menubar"><span>File</span><span>Edit</span><span>View</span><span>Help</span></div>
-  <div class="win-body">
-    <h3 class="section-h">Debabrata Satapathy — Java Backend Developer &amp; Aspiring Data Analyst</h3>
-    <p>Java backend developer based in Kendrapara, Odisha, building scalable REST services with Spring Boot, Hibernate/JPA and MySQL. Comfortable moving up the stack into React when a project needs a full end-to-end owner. Currently deep in enterprise-grade e-commerce architecture — auth, catalog, cart, orders and payments — secured with OAuth2 and JWT.</p>
-    <p>Also works as a motivated data analyst, exploring datasets, identifying trends, and presenting findings through clear visuals using Python, SQL and Excel to support data-driven decisions.</p>
-    <hr class="sep">
-    <p>github.com/3dharmadev &nbsp;|&nbsp; 3dharmadev.github.io &nbsp;|&nbsp; satapathy20001@gmail.com &nbsp;|&nbsp; +91-8249084184</p>
-  </div>
-  <div class="win-statusbar">Ln 1, Col 1 &nbsp;&nbsp; 100%</div>
-</div>
-
-<!-- ===== SKILLS WINDOW (tree view) ===== -->
-
-<div class="win bevel-out" id="win-skills" style="left:110px; top:80px; width:340px;">
-  <div class="win-title"><span class="win-title-txt">🖥️ System Properties</span>
-    <div class="win-btns"><button data-act="min">_</button><button data-act="max">▢</button><button data-act="close">✕</button></div>
-  </div>
-  <div class="win-menubar"><span>General</span><span>Device Manager</span><span>Performance</span></div>
-  <div class="win-body">
-    <div class="tree">
-      <div class="tree-node open">
-        <div class="tree-toggle"><span class="box"></span> Backend</div>
-        <div class="tree-children">
-          <div class="leaf">Java</div>
-          <div class="leaf">Spring Boot</div>
-          <div class="leaf">Spring Security</div>
-          <div class="leaf">RESTful API</div>
-          <div class="leaf">Hibernate &amp; JPA</div>
-          <div class="leaf">JDBC</div>
-          <div class="leaf">Servlet &amp; JSP</div>
-        </div>
-      </div>
-      <div class="tree-node">
-        <div class="tree-toggle"><span class="box"></span> Database</div>
-        <div class="tree-children"><div class="leaf">MySQL</div><div class="leaf">SQL</div></div>
-      </div>
-      <div class="tree-node">
-        <div class="tree-toggle"><span class="box"></span> Frontend</div>
-        <div class="tree-children">
-          <div class="leaf">HTML</div><div class="leaf">CSS</div>
-          <div class="leaf">JavaScript</div><div class="leaf">React</div>
-        </div>
-      </div>
-      <div class="tree-node">
-        <div class="tree-toggle"><span class="box"></span> Data &amp; Analytics</div>
-        <div class="tree-children">
-          <div class="leaf">Python</div><div class="leaf">Pandas</div><div class="leaf">NumPy</div>
-          <div class="leaf">Matplotlib</div><div class="leaf">Seaborn</div>
-          <div class="leaf">Exploratory Data Analysis (EDA)</div>
-          <div class="leaf">Data Cleaning &amp; Wrangling</div><div class="leaf">Trend Analysis</div>
-          <div class="leaf">Descriptive Statistics</div><div class="leaf">Correlation</div>
-          <div class="leaf">Probability</div><div class="leaf">Hypothesis Testing (basics)</div>
-        </div>
-      </div>
-      <div class="tree-node">
-        <div class="tree-toggle"><span class="box"></span> Excel</div>
-        <div class="tree-children">
-          <div class="leaf">Pivot Tables</div><div class="leaf">VLOOKUP</div>
-          <div class="leaf">Conditional Formatting</div><div class="leaf">Charts &amp; Formulas</div>
-        </div>
-      </div>
-      <div class="tree-node">
-        <div class="tree-toggle"><span class="box"></span> Tools</div>
-        <div class="tree-children">
-          <div class="leaf">Git &amp; GitHub</div><div class="leaf">Docker</div><div class="leaf">JUnit</div>
-          <div class="leaf">Jupyter Notebook</div><div class="leaf">Google Colab</div><div class="leaf">VS Code</div>
-        </div>
-      </div>
-      <div class="tree-node">
-        <div class="tree-toggle"><span class="box"></span> Soft Skills</div>
-        <div class="tree-children">
-          <div class="leaf">Adaptive</div><div class="leaf">Collaborative</div><div class="leaf">Communicative</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="win-statusbar">7 device categories detected</div>
-</div>
-
-<!-- ===== EDUCATION WINDOW (event viewer) ===== -->
-
-<div class="win bevel-out" id="win-education" style="left:150px; top:60px; width:460px;">
-  <div class="win-title"><span class="win-title-txt">📜 Event Viewer — education.log</span>
-    <div class="win-btns"><button data-act="min">_</button><button data-act="max">▢</button><button data-act="close">✕</button></div>
-  </div>
-  <div class="win-menubar"><span>Log</span><span>View</span><span>Options</span></div>
-  <div class="win-body">
-    <table class="evt">
-      <tr><th>Type</th><th>Date</th><th>Source</th><th>Description</th></tr>
-      <tr><td>ⓘ Info</td><td>2022–2023</td><td>Masai School, Bengaluru</td><td>Java Backend Development (Full Time)</td></tr>
-      <tr><td>ⓘ Info</td><td>2021–2022</td><td>Lovely Professional University, Phagwara</td><td>Master of Computer Application</td></tr>
-      <tr><td>ⓘ Info</td><td>2018–2021</td><td>Institute of Professional Studies And Research, Cuttack</td><td>Bachelor of Computer Application</td></tr>
-    </table>
-  </div>
-  <div class="win-statusbar">3 events</div>
-</div>
-
-<!-- ===== PROJECTS FOLDER WINDOW ===== -->
-
-<div class="win bevel-out" id="win-projects" style="left:190px; top:50px; width:420px;">
-  <div class="win-title"><span class="win-title-txt">📁 My Projects</span>
-    <div class="win-btns"><button data-act="min">_</button><button data-act="max">▢</button><button data-act="close">✕</button></div>
-  </div>
-  <div class="win-menubar"><span>File</span><span>Edit</span><span>View</span><span>Help</span></div>
-  <div class="win-body">
-    <div class="explorer-icons">
-      <div class="exp-icon" data-proj="sweetmart">
-        <svg viewBox="0 0 48 48"><rect x="8" y="4" width="26" height="40" fill="#fff" stroke="#000" stroke-width="1.5"/><path d="M27 4 L34 11 L27 11 Z" fill="#c0c0c0" stroke="#000" stroke-width="1"/><rect x="12" y="18" width="18" height="3" fill="#2a8"/><line x1="12" y1="26" x2="30" y2="26" stroke="#808080"/><line x1="12" y1="31" x2="30" y2="31" stroke="#808080"/></svg>
-        <span>Online Sweet Mart</span>
-      </div>
-      <div class="exp-icon" data-proj="hrms">
-        <svg viewBox="0 0 48 48"><rect x="8" y="4" width="26" height="40" fill="#fff" stroke="#000" stroke-width="1.5"/><path d="M27 4 L34 11 L27 11 Z" fill="#c0c0c0" stroke="#000" stroke-width="1"/><rect x="12" y="18" width="18" height="3" fill="#e2b400"/><line x1="12" y1="26" x2="30" y2="26" stroke="#808080"/><line x1="12" y1="31" x2="30" y2="31" stroke="#808080"/></svg>
-        <span>HRMS</span>
-      </div>
-      <div class="exp-icon" data-proj="cms">
-        <svg viewBox="0 0 48 48"><rect x="8" y="4" width="26" height="40" fill="#fff" stroke="#000" stroke-width="1.5"/><path d="M27 4 L34 11 L27 11 Z" fill="#c0c0c0" stroke="#000" stroke-width="1"/><rect x="12" y="18" width="18" height="3" fill="#c33"/><line x1="12" y1="26" x2="30" y2="26" stroke="#808080"/><line x1="12" y1="31" x2="30" y2="31" stroke="#808080"/></svg>
-        <span>Complaint Mgmt System</span>
-      </div>
-      <div class="exp-icon" data-proj="jiomart">
-        <svg viewBox="0 0 48 48"><rect x="8" y="4" width="26" height="40" fill="#fff" stroke="#000" stroke-width="1.5"/><path d="M27 4 L34 11 L27 11 Z" fill="#c0c0c0" stroke="#000" stroke-width="1"/><rect x="12" y="18" width="18" height="3" fill="#000080"/><line x1="12" y1="26" x2="30" y2="26" stroke="#808080"/><line x1="12" y1="31" x2="30" y2="31" stroke="#808080"/></svg>
-        <span>Jiomart Clone</span>
-      </div>
-      <div class="exp-icon" data-proj="tmetric">
-        <svg viewBox="0 0 48 48"><rect x="8" y="4" width="26" height="40" fill="#fff" stroke="#000" stroke-width="1.5"/><path d="M27 4 L34 11 L27 11 Z" fill="#c0c0c0" stroke="#000" stroke-width="1"/><rect x="12" y="18" width="18" height="3" fill="#808080"/><line x1="12" y1="26" x2="30" y2="26" stroke="#808080"/><line x1="12" y1="31" x2="30" y2="31" stroke="#808080"/></svg>
-        <span>Tmetric Clone</span>
-      </div>
-      <div class="exp-icon" data-proj="heart">
-        <svg viewBox="0 0 48 48"><rect x="6" y="10" width="36" height="26" fill="#fff" stroke="#000" stroke-width="1.5"/><polyline points="9,26 16,26 19,16 24,34 28,22 32,26 39,26" fill="none" stroke="#c33" stroke-width="1.6"/></svg>
-        <span>Heart Disease Analysis</span>
-      </div>
-      <div class="exp-icon" data-proj="gdp">
-        <svg viewBox="0 0 48 48"><rect x="6" y="10" width="36" height="26" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="11" y="24" width="4" height="8" fill="#000080"/><rect x="18" y="18" width="4" height="14" fill="#000080"/><rect x="25" y="14" width="4" height="18" fill="#000080"/><rect x="32" y="20" width="4" height="12" fill="#000080"/></svg>
-        <span>GDP Analysis</span>
-      </div>
-    </div>
-  </div>
-  <div class="win-statusbar">7 object(s)</div>
-</div>
-
-<!-- ===== CONTACT WINDOW ===== -->
-
-<div class="win bevel-out" id="win-contact" style="left:130px; top:100px; width:360px;">
-  <div class="win-title"><span class="win-title-txt">✉️ New Message</span>
-    <div class="win-btns"><button data-act="min">_</button><button data-act="max">▢</button><button data-act="close">✕</button></div>
-  </div>
-  <div class="win-menubar"><span>File</span><span>Edit</span><span>Insert</span><span>Format</span></div>
-  <div class="win-body">
-    <form id="cf">
-      <div class="field-row"><label for="fname">From</label><input id="fname" type="text" placeholder="your name" required></div>
-      <div class="field-row"><label for="femail">Reply-To</label><input id="femail" type="email" placeholder="you@example.com" required></div>
-      <div class="field-row"><label for="fsub">Subject</label><input id="fsub" type="text" value="Hello from your portfolio" required></div>
-      <div class="field-row textarea"><label for="fmsg">Message</label><textarea id="fmsg" rows="5" placeholder="what do you want to build?" required></textarea></div>
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
-        <button type="submit" class="win95-btn">Send</button>
-      </div>
-    </form>
-    <p id="cfNote" style="margin-top:8px; font-size:11px; color:#404040;">Opens your mail client, addressed to satapathy20001@gmail.com</p>
-  </div>
-  <div class="win-statusbar">Not sent</div>
-</div>
-
-<!-- ===== RESUME WINDOW ===== -->
-
-<div class="win bevel-out" id="win-resume" style="left:170px; top:120px; width:340px;">
-  <div class="win-title"><span class="win-title-txt">📄 Resume.exe</span>
-    <div class="win-btns"><button data-act="min">_</button><button data-act="max">▢</button><button data-act="close">✕</button></div>
-  </div>
-  <div class="win-body" style="text-align:center;">
-    <p>Debabrata Satapathy — Java Backend Developer &amp; Aspiring Data Analyst</p>
-    <p style="font-size:11px; color:#404040;">Full resumes, projects and links live on GitHub and the portfolio site.</p>
-    <div style="display:flex; gap:10px; justify-content:center; margin-top:12px;">
-      <a href="https://github.com/3dharmadev" target="_blank" rel="noopener" class="win95-btn" style="text-decoration:none; color:#000; display:inline-block;">Open GitHub</a>
-      <a href="https://3dharmadev.github.io" target="_blank" rel="noopener" class="win95-btn" style="text-decoration:none; color:#000; display:inline-block;">Open Site</a>
-    </div>
-  </div>
-</div>
-
-<!-- ===== PROJECT DETAIL TEMPLATE WINDOWS ===== -->
-
-<div class="win bevel-out proj-win" id="win-proj-sweetmart" style="left:200px; top:70px; width:340px;">
-  <div class="win-title"><span class="win-title-txt">📄 online_sweet_mart.txt</span>
-    <div class="win-btns"><button data-act="min">_</button><button data-act="max">▢</button><button data-act="close">✕</button></div>
-  </div>
-  <div class="win-body proj-detail">
-    <p>Collaborative Java backend project built by five contributors in four days, modeled on an online sweet-shop ordering flow. Owned the Admin, OrderBill and SweetOrder modules covering CRUD, exception handling and user/admin backend connectivity.</p>
-    <dl><dt>Stack</dt><dd class="chips">
-      <span class="chip">Spring Boot</span><span class="chip">Hibernate</span><span class="chip">Swagger</span>
-      <span class="chip">Lombok</span><span class="chip">JPA</span><span class="chip">JDBC</span><span class="chip">MySQL</span><span class="chip">Spring Security</span>
-    </dd></dl>
-    <div style="display:flex; gap:8px; margin-top:12px;">
-      <button class="win95-btn" disabled>Open GitHub</button>
-      <button class="win95-btn" disabled>Open Demo</button>
-    </div>
-  </div>
-</div>
-
-<div class="win bevel-out proj-win" id="win-proj-hrms" style="left:210px; top:75px; width:340px;">
-  <div class="win-title"><span class="win-title-txt">📄 hrms.txt</span>
-    <div class="win-btns"><button data-act="min">_</button><button data-act="max">▢</button><button data-act="close">✕</button></div>
-  </div>
-  <div class="win-body proj-detail">
-    <p>Individual full-stack HR management system built in three days. Admins assign projects to departments; employees update project status, request leave, and manage their accounts.</p>
-    <dl><dt>Stack</dt><dd class="chips">
-      <span class="chip">Java</span><span class="chip">Servlet</span><span class="chip">JSP</span><span class="chip">JSTL</span>
-      <span class="chip">JDBC</span><span class="chip">MySQL</span><span class="chip">Tomcat</span><span class="chip">Maven</span>
-    </dd></dl>
-    <div style="display:flex; gap:8px; margin-top:12px;">
-      <button class="win95-btn" disabled>Open GitHub</button>
-      <button class="win95-btn" disabled>Open Demo</button>
-    </div>
-  </div>
-</div>
-
-<div class="win bevel-out proj-win" id="win-proj-cms" style="left:220px; top:80px; width:320px;">
-  <div class="win-title"><span class="win-title-txt">📄 complaint_management_system.txt</span>
-    <div class="win-btns"><button data-act="min">_</button><button data-act="max">▢</button><button data-act="close">✕</button></div>
-  </div>
-  <div class="win-body proj-detail">
-    <p>Backend system for logging, tracking and resolving complaints through defined status stages, with role-based access for admins and users.</p>
-    <dl><dt>Stack</dt><dd class="chips"><span class="chip">Java</span><span class="chip">Spring Boot</span><span class="chip">MySQL</span></dd></dl>
-    <div style="display:flex; gap:8px; margin-top:12px;"><button class="win95-btn" disabled>Open GitHub</button></div>
-  </div>
-</div>
-
-<div class="win bevel-out proj-win" id="win-proj-jiomart" style="left:230px; top:85px; width:320px;">
-  <div class="win-title"><span class="win-title-txt">📄 jiomart_clone.txt</span>
-    <div class="win-btns"><button data-act="min">_</button><button data-act="max">▢</button><button data-act="close">✕</button></div>
-  </div>
-  <div class="win-body proj-detail">
-    <p>E-commerce clone covering product listing, cart and checkout flows — an early pass at the storefront patterns later formalized in the enterprise Spring Boot commerce architecture.</p>
-    <dl><dt>Stack</dt><dd class="chips"><span class="chip">JavaScript</span><span class="chip">HTML</span><span class="chip">CSS</span></dd></dl>
-    <div style="display:flex; gap:8px; margin-top:12px;">
-      <button class="win95-btn" disabled>Open GitHub</button>
-      <button class="win95-btn" disabled>Open Live</button>
-    </div>
-  </div>
-</div>
-
-<div class="win bevel-out proj-win" id="win-proj-tmetric" style="left:240px; top:90px; width:320px;">
-  <div class="win-title"><span class="win-title-txt">📄 tmetric_clone.txt</span>
-    <div class="win-btns"><button data-act="min">_</button><button data-act="max">▢</button><button data-act="close">✕</button></div>
-  </div>
-  <div class="win-body proj-detail">
-    <p>Time-tracking app clone with project timers, reporting views and a live demo walkthrough.</p>
-    <dl><dt>Stack</dt><dd class="chips"><span class="chip">JavaScript</span><span class="chip">React</span></dd></dl>
-    <div style="display:flex; gap:8px; margin-top:12px;">
-      <button class="win95-btn" disabled>Open GitHub</button>
-      <button class="win95-btn" disabled>Demo Video</button>
-      <button class="win95-btn" disabled>Live Site</button>
-    </div>
-  </div>
-</div>
-
-<div class="win bevel-out proj-win" id="win-proj-heart" style="left:250px; top:95px; width:320px;">
-  <div class="win-title"><span class="win-title-txt">📄 heart_disease_risk_analysis.txt</span>
-    <div class="win-btns"><button data-act="min">_</button><button data-act="max">▢</button><button data-act="close">✕</button></div>
-  </div>
-  <div class="win-body proj-detail">
-    <p>Analyzed the Heart Disease UCI dataset (303 records, 14 features) to identify key cardiovascular risk factors through end-to-end EDA — data cleaning, outlier detection, and feature exploration.</p>
-    <p>Built correlation heatmaps, pair plots, histograms and box plots to visualize relationships between variables and disease presence; identified age, max heart rate, and ST depression as key indicators.</p>
-    <dl><dt>Stack</dt><dd class="chips">
-      <span class="chip">Python</span><span class="chip">Pandas</span><span class="chip">NumPy</span>
-      <span class="chip">Matplotlib</span><span class="chip">Seaborn</span><span class="chip">Jupyter Notebook</span>
-    </dd></dl>
-    <div style="display:flex; gap:8px; margin-top:12px;"><button class="win95-btn" disabled>Open GitHub</button></div>
-  </div>
-</div>
-
-<div class="win bevel-out proj-win" id="win-proj-gdp" style="left:260px; top:100px; width:320px;">
-  <div class="win-title"><span class="win-title-txt">📄 gdp_analysis.txt</span>
-    <div class="win-btns"><button data-act="min">_</button><button data-act="max">▢</button><button data-act="close">✕</button></div>
-  </div>
-  <div class="win-body proj-detail">
-    <p>GeeksforGeeks Data Science assignment. Analyzed GDP data across multiple countries and time periods; cleaned raw data, performed time-series analysis, and compared growth trajectories of developing vs. developed economies.</p>
-    <p>Created line charts and bar graphs to communicate economic patterns, drawing data-backed conclusions on GDP correlation with key economic indicators.</p>
-    <dl><dt>Stack</dt><dd class="chips">
-      <span class="chip">Python</span><span class="chip">Pandas</span><span class="chip">NumPy</span>
-      <span class="chip">Matplotlib</span><span class="chip">Seaborn</span><span class="chip">Jupyter Notebook</span>
-    </dd></dl>
-    <div style="display:flex; gap:8px; margin-top:12px;"><button class="win95-btn" disabled>Open GitHub</button></div>
-  </div>
-</div>
-
-<!-- ===== TASKBAR ===== -->
-
-<div id="taskbar">
-  <button id="startBtn" class="bevel-out">
-    <span class="flag" aria-hidden="true">🪟</span> Start
-  </button>
-  <div id="taskWins"></div>
-  <div id="clock" class="bevel-out"></div>
-</div>
-
-<!-- ===== START MENU ===== -->
-
-<div id="startMenu" class="bevel-out">
-  <div class="sm-rail"><span>SatapathyOS 95</span></div>
-  <div class="sm-items">
-    <div class="sm-item" data-win="about"><svg viewBox="0 0 48 48"><rect x="9" y="4" width="30" height="40" fill="#fff" stroke="#000" stroke-width="1.5"/></svg> About Me</div>
-    <div class="sm-item" data-win="skills"><svg viewBox="0 0 48 48"><rect x="5" y="9" width="38" height="26" fill="#c0c0c0" stroke="#000" stroke-width="1.5"/></svg> System Properties</div>
-    <div class="sm-item" data-win="education"><svg viewBox="0 0 48 48"><rect x="6" y="8" width="36" height="32" fill="#fff" stroke="#000" stroke-width="1.5"/></svg> Event Viewer</div>
-    <div class="sm-item" data-win="projects"><svg viewBox="0 0 48 48"><path d="M4 14 L18 14 L22 18 L44 18 L44 38 L4 38 Z" fill="#ffd24c" stroke="#000" stroke-width="1.5"/></svg> My Projects</div>
-    <div class="sm-item" data-win="contact"><svg viewBox="0 0 48 48"><rect x="5" y="11" width="38" height="26" fill="#fff" stroke="#000" stroke-width="1.5"/></svg> New Message</div>
-    <div class="sm-item" data-win="resume"><svg viewBox="0 0 48 48"><rect x="8" y="4" width="26" height="40" fill="#fff" stroke="#000" stroke-width="1.5"/></svg> Resume.exe</div>
-    <div class="sm-sep"></div>
-    <div class="sm-item" id="shutdownItem"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="18" fill="none" stroke="#000" stroke-width="3"/><line x1="24" y1="8" x2="24" y2="22" stroke="#000" stroke-width="3"/></svg> Shut Down...</div>
-  </div>
-</div>
-
-<!-- ===== SHUTDOWN SCREEN ===== -->
-
-<div id="shutdown">
-  <div class="box">
-    <h1>It's now safe to close this tab.</h1>
-    <p>Thanks for visiting SatapathyOS. You can keep exploring — this screen is just for show.</p>
-    <button class="win95-btn" id="wakeUp">Wake up</button>
-  </div>
-</div>
+<div id="menu" role="menu"></div>
+<div id="desk"></div>
+<div id="wins"></div>
+<div id="dock"></div>
 
 <script>
-(function(){
-  const winIds = ['about','skills','education','projects','contact','resume'];
-  let zTop = 100;
-  const taskWinsEl = document.getElementById('taskWins');
-  const taskButtons = {};
+const IC={
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+  cpu:'<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/>',
+  edu:'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/>',
+  folder:'<path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>'
+};
+const chips=a=>'<ul class="chips">'+a.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+const sk=(t,a)=>'<h3>'+t+'</h3>'+chips(a);
+const proj=(n,s,k)=>'<div class="proj '+k+'"><b>'+n+'</b><span>'+s+'</span></div>';
+const APPS=[
+ {id:'about',t:'About Me',i:'user',g:'#4f6df5,#7a3fd1',w:460,x:90,y:70,c:
+  '<h2>Debabrata Satapathy</h2><p>Java backend developer and data analyst based in Kendrapara, Odisha. I build scalable REST services with Spring Boot, Hibernate/JPA and MySQL, and I move up the stack into React when a project needs one person to own it end to end.</p><p>Currently working on enterprise-grade e-commerce architecture: auth, catalog, cart, orders and payments, secured with OAuth2 and JWT.</p><p>I also analyse data with Python, SQL and Excel, finding trends and presenting them in clear visuals.</p>'},
+ {id:'skills',t:'Skills',i:'cpu',g:'#0fb5ae,#2f7fd8',w:480,x:150,y:100,c:
+  sk('Backend',['Java','Spring Boot','Spring Security','REST APIs','Hibernate &amp; JPA','JDBC','Servlet &amp; JSP'])+sk('Database',['MySQL','SQL'])+sk('Frontend',['HTML','CSS','JavaScript','React'])+sk('Data &amp; analytics',['Python','Pandas','NumPy','Matplotlib','Seaborn','EDA','Data cleaning','Trend analysis','Statistics','Hypothesis testing'])+sk('Excel',['Pivot tables','VLOOKUP','Conditional formatting','Charts &amp; formulas'])+sk('Tools',['Git &amp; GitHub','Docker','JUnit','Jupyter','Google Colab','VS Code'])},
+ {id:'edu',t:'Education',i:'edu',g:'#e9a23b,#e0603b',w:460,x:210,y:90,c:
+  '<h2>Education</h2><ol class="tl"><li><b>Java Backend Development</b><span>Masai School, Bengaluru · 2022–2023</span></li><li><b>Master of Computer Application</b><span>Lovely Professional University, Phagwara · 2021–2022</span></li><li><b>Bachelor of Computer Application</b><span>Institute of Professional Studies and Research, Cuttack · 2018–2021</span></li></ol>'},
+ {id:'proj',t:'Projects',i:'folder',g:'#3b82f6,#06b6d4',w:520,x:260,y:80,c:
+  '<h2>Projects</h2><div class="grid">'+proj('Online Sweet Mart','Backend app','a')+proj('HRMS','HR management','a')+proj('Complaint Management System','Backend app','a')+proj('Jiomart Clone','E-commerce','a')+proj('Tmetric Clone','Time tracking','a')+proj('Heart Disease Analysis','Data analysis','d')+proj('GDP Analysis','Data analysis','d')+'</div>'},
+ {id:'contact',t:'Contact',i:'mail',g:'#ec4899,#f97316',w:400,x:320,y:110,c:
+  '<h2>Get in touch</h2><div class="links"><a href="mailto:satapathy20001@gmail.com"><small>Email</small>satapathy20001@gmail.com</a><a href="tel:+918249084184"><small>Phone</small>+91 82490 84184</a><a href="https://github.com/3dharmadev" target="_blank" rel="noopener"><small>GitHub</small>github.com/3dharmadev</a></div>'}
+];
+const $=s=>document.querySelector(s);
+const tile=a=>'<span class="tile" style="background:linear-gradient(135deg,'+a.g.split(',')[0]+','+a.g.split(',')[1]+')"><svg viewBox="0 0 24 24">'+IC[a.i]+'</svg></span>';
+let z=10;
+APPS.forEach(a=>{
+  $('#desk').insertAdjacentHTML('beforeend','<button class="dicon" data-a="'+a.id+'">'+tile(a)+'<span>'+a.t+'</span></button>');
+  $('#dock').insertAdjacentHTML('beforeend','<button data-a="'+a.id+'" title="'+a.t+'" aria-label="'+a.t+'">'+tile(a)+'</button>');
+  $('#menu').insertAdjacentHTML('beforeend','<button role="menuitem" data-a="'+a.id+'">'+tile(a)+a.t+'</button>');
+  $('#wins').insertAdjacentHTML('beforeend','<section class="win" id="w-'+a.id+'" style="left:'+a.x+'px;top:'+a.y+'px;width:'+a.w+'px" aria-label="'+a.t+'"><div class="bar"><div class="lights"><button class="x" data-do="close" aria-label="Close"></button><button class="m" data-do="min" aria-label="Minimize"></button><button class="c" data-do="max" aria-label="Maximize"></button></div><b>'+a.t+'</b></div><div class="body">'+a.c+'</div></section>');
+});
+$('#menu').insertAdjacentHTML('beforeend','<hr><button id="shut" role="menuitem"><span style="width:30px;text-align:center">⏻</span>Restart</button>');
 
-  function makeTaskButton(id, label){
-    const btn = document.createElement('button');
-    btn.className = 'task-btn bevel-out active';
-    btn.textContent = label;
-    btn.addEventListener('click', ()=> toggleMinimize(id));
-    taskWinsEl.appendChild(btn);
-    taskButtons[id] = btn;
-  }
+function focusWin(w){w.style.zIndex=++z;document.querySelectorAll('.win').forEach(x=>x.dataset.top=x===w?1:0)}
+function sync(){APPS.forEach(a=>{const w=$('#w-'+a.id);$('#dock [data-a="'+a.id+'"]').classList.toggle('on',w.classList.contains('open'))})}
+function openApp(id){
+  const w=$('#w-'+id);
+  if(w.classList.contains('open')&&w.dataset.top==='1'&&!w.dataset.fromMenu){w.classList.remove('open')}
+  else{w.classList.add('open');focusWin(w)}
+  sync();
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-a]');
+  if(b){openApp(b.dataset.a);$('#menu').classList.remove('open');$('#launch').setAttribute('aria-expanded','false');return}
+  const d=e.target.closest('[data-do]');
+  if(d){const w=d.closest('.win');
+    if(d.dataset.do==='max')w.classList.toggle('max');else{w.classList.remove('open');if(d.dataset.do==='close')w.classList.remove('max')}
+    sync();return}
+  if(e.target.closest('#shut')){APPS.forEach(a=>$('#w-'+a.id).classList.remove('open','max'));sync();$('#menu').classList.remove('open');return}
+  if(!e.target.closest('#menu')&&!e.target.closest('#launch'))$('#menu').classList.remove('open');
+});
+$('#launch').onclick=()=>{const m=$('#menu');m.classList.toggle('open');$('#launch').setAttribute('aria-expanded',m.classList.contains('open'))};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#menu').classList.remove('open')});
 
-  function bringToFront(el){
-    zTop += 1;
-    el.style.zIndex = zTop;
-    Object.keys(taskButtons).forEach(k=> taskButtons[k].classList.remove('active'));
-  }
+/* dragging */
+document.querySelectorAll('.win').forEach(w=>{
+  w.addEventListener('pointerdown',()=>focusWin(w));
+  const bar=w.querySelector('.bar');let sx,sy,ox,oy,drag=false;
+  bar.addEventListener('pointerdown',e=>{
+    if(e.target.closest('button')||w.classList.contains('max'))return;
+    drag=true;sx=e.clientX;sy=e.clientY;ox=w.offsetLeft;oy=w.offsetTop;bar.setPointerCapture(e.pointerId)});
+  bar.addEventListener('pointermove',e=>{
+    if(!drag)return;
+    const nx=Math.min(Math.max(ox+e.clientX-sx,-w.offsetWidth+80),innerWidth-80);
+    const ny=Math.min(Math.max(oy+e.clientY-sy,36),innerHeight-90);
+    w.style.left=nx+'px';w.style.top=ny+'px'});
+  bar.addEventListener('pointerup',()=>drag=false);
+  bar.addEventListener('dblclick',e=>{if(!e.target.closest('button'))w.classList.toggle('max')});
+});
 
-  function openWindow(id, label){
-    const el = document.getElementById('win-' + id);
-    if(!el) return;
-    const wasOpen = el.classList.contains('open');
-    el.classList.add('open');
-    bringToFront(el);
-    if(!taskButtons[id]) makeTaskButton(id, label || id);
-    taskButtons[id].classList.add('active');
-    if(!wasOpen){
-      // slight cascade so repeated opens don't stack exactly
-    }
-  }
+/* clock + theme */
+function tick(){$('#clock').textContent=new Date().toLocaleString([], {weekday:'short',hour:'numeric',minute:'2-digit'})}
+tick();setInterval(tick,30000);
+$('#theme').onclick=()=>{
+  const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;
+  r.dataset.theme=dark?'light':'dark'};
 
-  function closeWindow(id){
-    const el = document.getElementById('win-' + id);
-    if(el) el.classList.remove('open');
-    if(taskButtons[id]){ taskButtons[id].remove(); delete taskButtons[id]; }
-  }
-
-  function toggleMinimize(id){
-    const el = document.getElementById('win-' + id);
-    if(!el) return;
-    if(el.style.display === 'none'){
-      el.style.display = 'flex';
-      bringToFront(el);
-      taskButtons[id].classList.add('active');
-    } else {
-      el.style.display = 'none';
-      taskButtons[id].classList.remove('active');
-    }
-  }
-
-  function labelFor(id){
-    const map = {
-      about:'About Me.txt - Notepad', skills:'System Properties', education:'Event Viewer - education.log',
-      projects:'My Projects', contact:'New Message', resume:'Resume.exe'
-    };
-    return map[id] || id;
-  }
-
-  // desktop icons
-  document.querySelectorAll('#desktop .icon').forEach(icon=>{
-    let clicks = 0, timer;
-    function activate(){ openWindow(icon.dataset.win, labelFor(icon.dataset.win)); }
-    icon.addEventListener('click', ()=>{
-      document.querySelectorAll('#desktop .icon').forEach(i=> i.classList.remove('selected'));
-      icon.classList.add('selected');
-      clicks++;
-      if(clicks === 1){ timer = setTimeout(()=>{ clicks = 0; }, 380); }
-      else { clicks = 0; clearTimeout(timer); activate(); }
-    });
-    icon.addEventListener('keydown', e=>{ if(e.key === 'Enter') activate(); });
-  });
-
-  // start menu items
-  document.querySelectorAll('.sm-item[data-win]').forEach(item=>{
-    item.addEventListener('click', ()=>{
-      openWindow(item.dataset.win, labelFor(item.dataset.win));
-      document.getElementById('startMenu').classList.remove('open');
-    });
-  });
-
-  // project detail icons inside "My Projects" folder
-  document.querySelectorAll('.exp-icon').forEach(icon=>{
-    icon.addEventListener('dblclick', ()=> openProjectDetail(icon.dataset.proj));
-    let c=0, t;
-    icon.addEventListener('click', ()=>{
-      c++;
-      if(c===1){ t=setTimeout(()=>{c=0;},380); }
-      else { c=0; clearTimeout(t); openProjectDetail(icon.dataset.proj); }
-    });
-  });
-  const projLabels = {
-    sweetmart:'online_sweet_mart.txt', hrms:'hrms.txt', cms:'complaint_management_system.txt',
-    jiomart:'jiomart_clone.txt', tmetric:'tmetric_clone.txt', heart:'heart_disease_risk_analysis.txt', gdp:'gdp_analysis.txt'
-  };
-  function openProjectDetail(key){
-    const id = 'proj-' + key;
-    const el = document.getElementById('win-' + id);
-    if(!el) return;
-    el.classList.add('open');
-    bringToFront(el);
-    if(!taskButtons[id]) makeTaskButton(id, projLabels[key]);
-    taskButtons[id].classList.add('active');
-  }
-
-  // generic close/min/max handling for ALL windows (including project detail windows)
-  document.querySelectorAll('.win').forEach(win=>{
-    const id = win.id.replace('win-','');
-    win.addEventListener('mousedown', ()=> bringToFront(win));
-    win.querySelectorAll('.win-btns button').forEach(btn=>{
-      btn.addEventListener('click', (e)=>{
-        e.stopPropagation();
-        const act = btn.dataset.act;
-        if(act === 'close') closeWindow(id);
-        if(act === 'min') toggleMinimize(id);
-        if(act === 'max') win.classList.toggle('maximized-noop'); // kept simple/no-op for restraint
-      });
-    });
-    // dragging
-    const handle = win.querySelector('.win-title');
-    let dragging = false, offX = 0, offY = 0;
-    handle.addEventListener('mousedown', (e)=>{
-      dragging = true;
-      const rect = win.getBoundingClientRect();
-      offX = e.clientX - rect.left; offY = e.clientY - rect.top;
-      bringToFront(win);
-      e.preventDefault();
-    });
-    handle.addEventListener('touchstart', (e)=>{
-      dragging = true;
-      const t = e.touches[0]; const rect = win.getBoundingClientRect();
-      offX = t.clientX - rect.left; offY = t.clientY - rect.top;
-      bringToFront(win);
-    }, {passive:true});
-    document.addEventListener('mousemove', (e)=>{
-      if(!dragging) return;
-      win.style.left = Math.max(0, e.clientX - offX) + 'px';
-      win.style.top = Math.max(0, e.clientY - offY) + 'px';
-    });
-    document.addEventListener('touchmove', (e)=>{
-      if(!dragging) return;
-      const t = e.touches[0];
-      win.style.left = Math.max(0, t.clientX - offX) + 'px';
-      win.style.top = Math.max(0, t.clientY - offY) + 'px';
-    }, {passive:true});
-    document.addEventListener('mouseup', ()=> dragging = false);
-    document.addEventListener('touchend', ()=> dragging = false);
-  });
-
-  // skills tree toggles
-  document.querySelectorAll('.tree-toggle').forEach(t=>{
-    t.addEventListener('click', ()=> t.parentElement.classList.toggle('open'));
-  });
-
-  // start menu open/close
-  const startBtn = document.getElementById('startBtn');
-  const startMenu = document.getElementById('startMenu');
-  startBtn.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    startMenu.classList.toggle('open');
-  });
-  document.addEventListener('click', (e)=>{
-    if(!startMenu.contains(e.target) && e.target !== startBtn) startMenu.classList.remove('open');
-  });
-
-  // clock
-  function tick(){
-    const d = new Date();
-    let h = d.getHours(); const m = d.getMinutes().toString().padStart(2,'0');
-    const ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12; if(h === 0) h = 12;
-    document.getElementById('clock').textContent = h + ':' + m + ' ' + ampm;
-  }
-  tick(); setInterval(tick, 1000 * 10);
-
-  // contact form -> mailto
-  document.getElementById('cf').addEventListener('submit', function(e){
-    e.preventDefault();
-    const name = document.getElementById('fname').value.trim();
-    const email = document.getElementById('femail').value.trim();
-    const sub = document.getElementById('fsub').value.trim();
-    const msg = document.getElementById('fmsg').value.trim();
-    const subject = encodeURIComponent(sub || ('Portfolio contact from ' + name));
-    const body = encodeURIComponent(msg + '\n\n— ' + name + ' (' + email + ')');
-    window.location.href = 'mailto:satapathy20001@gmail.com?subject=' + subject + '&body=' + body;
-    document.getElementById('cfNote').textContent = 'Opening your mail client...';
-  });
-
-  // shut down easter egg
-  document.getElementById('shutdownItem').addEventListener('click', ()=>{
-    document.getElementById('startMenu').classList.remove('open');
-    document.getElementById('shutdown').classList.add('show');
-  });
-  document.getElementById('wakeUp').addEventListener('click', ()=>{
-    document.getElementById('shutdown').classList.remove('show');
-  });
-
-  // open About + Projects by default so the desktop isn't empty on load
-  openWindow('about', labelFor('about'));
-  const aboutWin = document.getElementById('win-about');
-  aboutWin.style.left = '60px'; aboutWin.style.top = '36px';
-})();
+/* start with About open */
+if(innerWidth<=640){const a=$('#w-about');a.style.left='6px';a.style.top='48px';a.style.width='calc(100vw - 12px)'}
+openApp('about');
 </script>
-
 </body>
 </html>
